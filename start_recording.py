@@ -224,9 +224,10 @@ def get_streams_for_user_ids(stream_ids: list):
 
 
 def strip_illegal_chars_from_title(title: str):
-    for char in title:
-        if char not in allowed_chars:
-            title = title.replace(char, "")
+    # Linux only forbids "/" and null byte in filenames
+    title = title.replace(" ", "_")
+    title = title.replace("/", "_")
+    title = title.replace("\x00", "")
     return title
 
 
