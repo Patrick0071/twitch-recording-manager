@@ -224,11 +224,10 @@ def get_streams_for_user_ids(stream_ids: list):
 
 
 def strip_illegal_chars_from_title(title: str):
-    allowed_chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789_-"
+    # Linux only forbids "/" and null byte in filenames
     title = title.replace(" ", "_")
-    for char in title:
-        if char not in allowed_chars:
-            title = title.replace(char, "")
+    title = title.replace("/", "_")
+    title = title.replace("\x00", "")
     return title
 
 
@@ -251,7 +250,7 @@ def start_recording_if_not_already(streams: dict):
         if not process_exists:
             print(f"{streamer_name} process does not exist, starting now")
             streamer_directory = f"{Config.DOWNLOAD_LOCATION}/{streamer_name}/"
-            current_time = datetime.now().strftime('%Y-%m-%d_%H%M%S')
+            current_time = datetime.now().strftime('%d-%m-%Y %H.%M.%S')
             filename = f"{streamer_name}_TwitchVOD_{current_time}_{stream_title}.mp4"
             full_path = streamer_directory + filename
             create_streamer_folder_if_not_exists(streamer_directory)
