@@ -2,6 +2,7 @@ import subprocess
 import requests
 import time
 import psutil
+import re
 import os
 from RecordingThread import RecordingThread
 from datetime import datetime
@@ -223,11 +224,34 @@ def get_streams_for_user_ids(stream_ids: list):
     return streams
 
 
-def strip_illegal_chars_from_title(title: str):
-    # Linux only forbids "/" and null byte in filenames
+def strip_illegal_chars_from_title(title: str) -> str:
+    # Vervang spaties eerst (optioneel, zoals je al deed)
     title = title.replace(" ", "_")
-    title = title.replace("/", "_")
-    title = title.replace("\x00", "")
+
+    # Verwijder ASCII control characters (0–31)
+    title = re.sub(r'[\x00-\x1f]', '', title)
+
+    # Windows + Linux verboden tekens
+    illegal_chars = r'[<>:"/\\|?*]'
+    title = re.sub(illegal_chars, '_', title)
+
+    # Verwijder eindigende spaties en punten (Windows-regel)
+    title = title.rstrip(' .')
+
+    # Vermijd gereserveerde Windows-namen
+    windows_reserved_names = {
+        "CON", "PRN", "AUX", "NUL",
+        *(f"COM{i}" for i in range(1, 10)),
+        *(f"LPT{i}" for i in range(1, 10)),
+    }
+
+    if title.upper() in windows_reserved_names:
+        title = f"_{title}"
+
+    # Fallback als de titel leeg wordt
+    if not title:
+        title = "untitled"
+
     return title
 
 
@@ -250,7 +274,7 @@ def start_recording_if_not_already(streams: dict):
         if not process_exists:
             print(f"{streamer_name} process does not exist, starting now")
             streamer_directory = f"{Config.DOWNLOAD_LOCATION}/{streamer_name}/"
-            current_time = datetime.now().strftime('%d-%m-%Y %H.%M.%S')
+            current_time = datetime.now().strftime('%d-%m-%Y_%H.%M.%S')
             filename = f"{streamer_name}_TwitchVOD_{current_time}_{stream_title}.mp4"
             full_path = streamer_directory + filename
             create_streamer_folder_if_not_exists(streamer_directory)
