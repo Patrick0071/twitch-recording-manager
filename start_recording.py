@@ -275,7 +275,7 @@ def start_recording_if_not_already(streams: dict):
             print(f"{streamer_name} process does not exist, starting now")
             streamer_directory = f"{Config.DOWNLOAD_LOCATION}/{streamer_name}/"
             current_time = datetime.now().strftime('%d-%m-%Y_%H.%M.%S')
-            filename = f"{streamer_name}_TwitchVOD_{current_time}_{stream_title}.mp4"
+            filename = f"{streamer_name}_TwitchVOD_{current_time}_{stream_title}.mkv"
             full_path = streamer_directory + filename
             create_streamer_folder_if_not_exists(streamer_directory)
             start_recording(filename, full_path, streamer_name, get_twitch_oauth_token_from_config())
