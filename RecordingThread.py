@@ -36,9 +36,6 @@ class RecordingThread(threading.Thread):
             "--ffmpeg-fout", "matroska",
             "--ffmpeg-copyts",
             "--ffmpeg-start-at-zero",
-
-            "--twitch-disable-hosting",
-            "--twitch-disable-ads"
         ]
         if twitch_oauth_token != "":
             params.extend([f"--twitch-api-header=Authorization=OAuth {twitch_oauth_token}"])
