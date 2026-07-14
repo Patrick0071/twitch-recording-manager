@@ -224,34 +224,12 @@ def get_streams_for_user_ids(stream_ids: list):
     return streams
 
 
-def strip_illegal_chars_from_title(title: str) -> str:
-    # Vervang spaties eerst (optioneel, zoals je al deed)
+def strip_illegal_chars_from_title(title: str):
+    allowed_chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789_-"
     title = title.replace(" ", "_")
-
-    # Verwijder ASCII control characters (0–31)
-    title = re.sub(r'[\x00-\x1f]', '', title)
-
-    # Windows + Linux verboden tekens
-    illegal_chars = r'[<>:"/\\|?*]'
-    title = re.sub(illegal_chars, '_', title)
-
-    # Verwijder eindigende spaties en punten (Windows-regel)
-    title = title.rstrip(' .')
-
-    # Vermijd gereserveerde Windows-namen
-    windows_reserved_names = {
-        "CON", "PRN", "AUX", "NUL",
-        *(f"COM{i}" for i in range(1, 10)),
-        *(f"LPT{i}" for i in range(1, 10)),
-    }
-
-    if title.upper() in windows_reserved_names:
-        title = f"_{title}"
-
-    # Fallback als de titel leeg wordt
-    if not title:
-        title = "untitled"
-
+    for char in title:
+        if char not in allowed_chars:
+            title = title.replace(char, "")
     return title
 
 
