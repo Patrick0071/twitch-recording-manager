@@ -31,7 +31,7 @@ class RecordingThread(threading.Thread):
             "streamlink",
             "-o", full_path,
             f"https://www.twitch.tv/{streamer_name}",
-            "1080p",
+            "1080p60,1080p,720p60,480p30",
 
             "--ffmpeg-fout", "matroska",
             "--ffmpeg-copyts",
